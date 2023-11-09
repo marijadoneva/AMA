@@ -1,63 +1,59 @@
 package com.AMA.step_definitions;
 
-import com.AMA.pages.BasePage;
+
 import com.AMA.pages.LoginPage;
 import com.AMA.utilities.BrowserUtils;
 import com.AMA.utilities.ConfigurationReader;
-import com.AMA.utilities.Driver;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.Select;
+import org.junit.Assert;
+
 
 public class AMA_Login_StepDefinitions {
 
 
-    BasePage basePage = new BasePage();
     LoginPage loginPage = new LoginPage();
 
     @Given("user is on the login page")
     public void user_is_on_the_login_page() {
-        BrowserUtils.waitForVisibility(basePage.SignInDropdown, 2);
-        basePage.SignInDropdown.click();
-        BrowserUtils.waitForVisibility(basePage.SignInLink, 2);
-        basePage.SignInLink.click();
-
-
+        BrowserUtils.sleep(3);
+        loginPage.SignInDropdown.click();
+        BrowserUtils.sleep(3);
+        loginPage.SignInLink.click();
     }
     @When("user enters username")
     public void user_enters_username() {
-
-        //loginPage.signIn.click();
-       //Driver.getDriver().switchTo().frame(loginPage.iFrame);
-//       loginPage.usernameBox.click();
-       loginPage.usernameBox.sendKeys("Marija");
-
+       loginPage.usernameBox.sendKeys(ConfigurationReader.getProperty("username"));
     }
     @When("user enters password")
     public void user_enters_password() {
-        //loginPage.passwordBox.sendKeys(ConfigurationReader.getProperty("password"));
+        loginPage.passwordBox.sendKeys(ConfigurationReader.getProperty("password"));
     }
-
-
-
-    @Given("user is on a {string} navigation menu window")
-    public void user_is_on_a_navigation_menu_window(String string) {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+    @When("user clicks on Sign in Button")
+    public void user_clicks_on_sign_in_button() {
+        loginPage.signIn.click();
     }
-//    @When("user clicks on logo icon")
-//    public void user_clicks_on_logo_icon() {
-//        // Write code here that turns the phrase above into concrete actions
-//        throw new io.cucumber.java.PendingException();
-//    }
-//    @Then("user is not directed to {string} page")
-//    public void user_is_not_directed_to_page(String string) {
-//        // Write code here that turns the phrase above into concrete actions
-//        throw new io.cucumber.java.PendingException();
-//    }
-
-
+    @Then("the user should not be able to log in")
+    public void the_user_should_not_be_able_to_log_in() {
+        Assert.assertTrue(loginPage.errorMsg.isDisplayed());
+    }
+    @When("the user login with {string},{string}")
+    public void the_user_login_with(String username, String password) {
+        loginPage.usernameBox.sendKeys(username);
+        loginPage.passwordBox.sendKeys(password);
+    }
+    @When("user leaves username box empty")
+    public void user_leaves_username_box_empty() {
+        loginPage.usernameBox.sendKeys("");
+    }
+    @Then("user is able to see message {string}")
+    public void user_is_able_to_see_message(String expectedMsg) {
+        Assert.assertTrue(loginPage.getErrorMsg(expectedMsg).isDisplayed());
+    }
+    @Then("{string} user is logged in")
+    public void userIsLoggedIn(String expectedUserName) {
+        String actualUserName = loginPage.userName.getText();
+        Assert.assertEquals(expectedUserName, actualUserName);
+    }
 }
